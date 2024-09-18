@@ -1,4 +1,4 @@
-const Perks = ({selected, onChange}) => {
+const Perks = (selected, onChange) => {
     function handleCbClick(e){
         const {checked, name} = e.target
         if(checked){
