@@ -46,30 +46,34 @@ This project is built using the following technologies:
 
 Follow these steps to set up the project locally:
 
-1. **Clone the repository**:
+1. **Fork the repository**:
+
+   - Click the "Fork" button at the top right of this repository's page.
+
+2. **Clone the repository**:
 
    ```bash
    git clone <repository-url>
    cd <repository-directory>
    ```
 
-2. Install dependencies for the backend: Navigate to the backend directory and install dependencies:
+3. Install dependencies for the backend: Navigate to the backend directory and install dependencies:
 
    ```bash
    cd api
    npm install
    ```
 
-3. Install dependencies for the frontend: Navigate to the frontend directory and install dependencies:
+4. Install dependencies for the frontend: Navigate to the frontend directory and install dependencies:
 
    ```bash
    cd client
    npm install
    ```
 
-4. Set up the database: Make sure you have MongoDB running and update the database connection string in the backend configuration.
+5. Set up the database: Make sure you have MongoDB running and update the database connection string in the backend configuration.
 
-5. Run the application:
+6. Run the application:
 
 - Start the backend server:
 
