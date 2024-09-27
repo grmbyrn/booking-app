@@ -128,8 +128,47 @@ app.get('/places', (req, res) => {
     }
 )})
 
-app.get('/places/:id', (req, res) => {
-    res.json(req.params)
+app.get('/places/:id', async(req, res) => {
+    const {id} = req.params
+    res.json(await Place.findById(id))
 })
+
+app.put('/places/:id', async (req, res) => {
+    const { token } = req.cookies;
+    const { title, address, addedPhotos, description, perks, extraInfo, checkIn, checkOut, maxGuests } = req.body;
+    const { id } = req.params; // Extract the ID from the URL parameters
+
+    jwt.verify(token, jwtSecret, {}, async (err, userData) => {
+        if (err) {
+            return res.status(401).json({ error: 'Unauthorized' }); // Handle JWT verification error
+        }
+
+        const placeDoc = await Place.findById(id); // Find the place by ID
+        if (!placeDoc) {
+            return res.status(404).json({ error: 'Place not found' }); // Handle place not found
+        }
+
+        if (userData.id !== placeDoc.owner.toString()) {
+            return res.status(403).json({ error: 'You are not authorized to update this place' }); // Handle unauthorized update
+        }
+
+        // Update the place details
+        placeDoc.set({
+            title,
+            address,
+            photos: addedPhotos,
+            description,
+            perks,
+            extraInfo,
+            checkIn,
+            checkOut,
+            maxGuests,
+        });
+
+        await placeDoc.save();
+        res.json({ message: 'Place updated successfully' });
+    });
+});
+
 
 app.listen(4000)

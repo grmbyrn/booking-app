@@ -1,5 +1,6 @@
 import axios from "axios";
 import { createContext, useEffect, useState } from "react";
+import PropTypes from 'prop-types';
 
 export const UserContext = createContext({})
 
@@ -20,3 +21,7 @@ export function UserContextProvider({children}){
         </UserContext.Provider>
     )
 }
+
+UserContextProvider.propTypes = {
+    children: PropTypes.node.isRequired, // `node` allows any renderable content (string, element, etc.)
+};

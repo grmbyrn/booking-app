@@ -22,7 +22,18 @@ const PlacesFormPage = () => {
         if(!id){
             return
         }
-        axios.get('/places/'+id)
+        axios.get('/places/'+id).then(response => {
+            const {data} = response
+            setTitle(data.title)
+            setAddress(data.address)
+            setAddedPhotos(data.photos)
+            setDescription(data.description)
+            setPerks(data.perks)
+            setExtraInfo(data.extraInfo)
+            setCheckIn(data.checkIn)
+            setCheckOut(data.checkOut)
+            setMaxGuests(data.maxGuests)
+        })
     }, [id])
 
     function inputHeader(text){
@@ -46,10 +57,26 @@ const PlacesFormPage = () => {
         )
     }
 
-    async function addNewPlace(e){
+    async function savePlace(e){
         e.preventDefault()
-        await axios.post('/places', {title, address, addedPhotos, description, perks, extraInfo, checkIn, checkOut, maxGuests})
-        setRedirect(true)
+        const placeData = {title, address, addedPhotos, description, perks, extraInfo, checkIn, checkOut, maxGuests}
+        try {
+            if (id) {
+                // Update the place using the correct URL
+                await axios.put(`/places/${id}`, placeData, {
+                    withCredentials: true // Ensure cookies are sent
+                });
+            } else {
+                // Create a new place
+                await axios.post('/places', placeData, {
+                    withCredentials: true // Ensure cookies are sent
+                });
+            }
+            setRedirect(true);
+        } catch (error) {
+            console.error("Error saving place:", error.response ? error.response.data : error.message);
+            // Optionally, handle error state (e.g., show an alert or message)
+        }
     }
 
     if(redirect){
@@ -58,7 +85,7 @@ const PlacesFormPage = () => {
   return (
     <div>
         <AccountNav />
-        <form onSubmit={addNewPlace}>
+        <form onSubmit={savePlace}>
             {preInput('Title', 'Title for this place')}
             <input type='text' value={title} onChange={e => setTitle(e.target.value)} placeholder="title, for example: My lovely apartment" />
             {preInput('Address', 'Address for this place')}
