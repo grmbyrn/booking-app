@@ -15,10 +15,10 @@ const PlaceImg = ({place, index=0, className=null}) => {
 
 PlaceImg.propTypes = {
     place: PropTypes.shape({
-        photos: PropTypes.arrayOf(PropTypes.string).isRequired,  // Ensuring that photos is an array of strings
-    }).isRequired,  // place is required
-    index: PropTypes.number,  // index is a number
-    className: PropTypes.string,  // className is a string
+        photos: PropTypes.arrayOf(PropTypes.string).isRequired,
+    }).isRequired,
+    index: PropTypes.number,
+    className: PropTypes.string,
 };
 
 export default PlaceImg
