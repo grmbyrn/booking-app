@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import {differenceInCalendarDays} from "date-fns";
 import PropTypes from 'prop-types';
 import axios from "axios";
 import { Navigate } from "react-router-dom";
+import { UserContext } from "./UserContext";
 
 const BookingWidget = ({place}) => {
     const [checkIn, setCheckIn] = useState('')
@@ -12,6 +13,14 @@ const BookingWidget = ({place}) => {
     const [mobile, setMobile] = useState('')
     const [redirect, setRedirect] = useState('')
 
+    const {user} = useContext(UserContext)
+
+    useEffect(() => {
+        if(user){
+            setName(user.name)
+        }
+    }, [user])
+
     let numberOfNights = 0
 
     if(checkIn && checkOut){
@@ -20,6 +29,7 @@ const BookingWidget = ({place}) => {
 
     async function bookThisPlace(){
         const response = await axios.post('/bookings', {checkIn, checkOut, name, mobile, numberOfGuests, place: place._id, price: numberOfNights * place.price})
+        console.log('Booking response:', response)
         const bookingId = response.data._id
         setRedirect(`/account/bookings/${bookingId}`)
     }
@@ -73,9 +83,9 @@ const BookingWidget = ({place}) => {
             )}
         </div>
         <button onClick={bookThisPlace} className="primary mt-4">
-            Book this place
+            Book this place: 
             {numberOfNights > 0 && (
-                <span>${numberOfNights * place.price}</span>
+                <span> ${numberOfNights * place.price}</span>
             )}
         </button>
     </div>
@@ -85,7 +95,7 @@ const BookingWidget = ({place}) => {
 BookingWidget.propTypes = {
     place: PropTypes.shape({
         price: PropTypes.number.isRequired,
-        _id: PropTypes.number.isRequired,
+        _id: PropTypes.string.isRequired,
     }).isRequired
 }
 

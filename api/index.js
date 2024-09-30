@@ -26,6 +26,15 @@ app.use(cors({
 
 mongoose.connect(process.env.MONGO_URL)
 
+function getUserDataFromReq(req){
+    return new Promise((resolve, reject) => {
+        jwt.verify(req.cookies.token, jwtSecret, {}, async (err, userData) => {
+            if(err) throw err
+            resolve(userData)
+        })
+    })
+}
+
 app.get('/test', (req, res) => {
     res.json('test ok')
 })
@@ -176,15 +185,30 @@ app.get('/places', async (req, res) => {
     res.json(await Place.find())
 })
 
-app.post('/bookings', (req, res) => {
-    const {place, checkIn, checkOut, numberOfGuests, name, mobile, price} = req.body
-    Booking.create({
-        place, checkIn, checkOut, numberOfGuests, name, mobile, price
-    }).then((err, doc) => {
-        res.json(doc)
-    }).catch((err) => {
-        throw err
-    })
+app.post('/bookings', async (req, res) => {
+    try {
+        const userData = await getUserDataFromReq(req); // Ensure this function works and returns the user data
+        const { place, checkIn, checkOut, numberOfGuests, name, mobile, price } = req.body;
+        
+        // Create the booking
+        const booking = await Booking.create({
+            place, checkIn, checkOut, numberOfGuests, name, mobile, price, user: userData.id
+        });
+
+        // Send the booking document as response
+        res.json(booking);
+
+    } catch (error) {
+        // Handle any errors during the booking creation
+        console.error('Error creating booking:', error);
+        res.status(500).json({ error: 'Booking failed' });
+    }
+});
+
+
+app.get('/bookings', async (req, res) => {
+    const userData = await getUserDataFromReq(req)
+    res.json(await Booking.find({user:userData.id}).populate('place'))
 })
 
 app.listen(4000)
