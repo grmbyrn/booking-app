@@ -22,10 +22,23 @@ const bucket = 'graeme-booking-app'
 app.use(express.json())
 app.use(cookieParser())
 app.use('/uploads', express.static(__dirname+'/uploads'))
+
+const allowedOrigins = [
+    'http://localhost:5173',
+    'http://localhost:5174',
+];
+
 app.use(cors({
     credentials: true,
-    origin: 'http://localhost:5174',
-  }));
+    origin: function (origin, callback) {
+        if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, origin);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    }
+}));
+
 
 async function uploadToS3(path, originalFileName, mimeType) {
     const client = new S3Client({
